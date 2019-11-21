@@ -1,28 +1,32 @@
-#include <iostream>
-#include "graph.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-using namespace std;
+#include "graph.h"
 
 void readNodes(int n);
 int *neighbors(int n);
 
 int main() {
     int n;
-    cout << "number of vertices.. "; cin >> n;
+    printf("number of vertices.. ");
+    scanf("%d", &n);
+
     readNodes(n);
     printNodes();
     printInRanks();
 
-    cout << endl;
+    printf("\n");
     return 0;
 }
 
 void readNodes(int n) {
     for (int i = 0; i < n; i++) {
-        node *p = new node;
+        struct node *p = (struct node*) malloc(sizeof(struct node));
         int m;
 
-        cout << "number of neighbors for node " << i << " .. "; cin >> m;
+        printf("number of neighbors for node %d .. ", i);
+        scanf("%d", &m);
+
         p->id = i;
         p->vertices = neighbors(m);
         p->len = m;
@@ -35,10 +39,10 @@ int *neighbors(int n) {
     if (n < 1) 
         return NULL;
     
-    int *nums = new int[n];
+    int *nums = (int *) malloc(sizeof(int) * n);
     for (int i = 0; i < n; i++) {
-        cout << "neighbor " << i << " .. "; 
-        cin >> nums[i];
+        printf("neighbor %d ", i);
+        scanf("%d", nums + i);
     }
     return nums;
 }
