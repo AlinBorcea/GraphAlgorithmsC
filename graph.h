@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 struct node {
     int id;
@@ -11,8 +12,12 @@ void addNode(struct node *p);
 void printNodes();
 void printOneNode(struct node *p);
 void printRanks();
+
 int inRank(int id);
+int outRank(int id);
 int hasId(struct node *p, int id);
+
+struct node *nodeI(int i);
 
 struct node *first = 0;
 struct node *last = 0;
@@ -49,6 +54,15 @@ void printInRanks() {
         printf("in rank of %d is %d\n", p->id, inRank(p->id));
 }
 
+void printOutRanks() {
+    int rank;
+    for (struct node *p = first; p; p = p->next) {
+        rank = outRank(p->id);
+        printf("out rank of node %d is ", p->id);
+        ((rank) ? printf("%d\n", rank) : printf("none"));
+    }
+}
+
 int inRank(int id) {
     int c = 0;
     for (struct node *p = first; p; p = p->next) {
@@ -56,6 +70,11 @@ int inRank(int id) {
             c++;
     }
     return c;
+}
+
+int outRank(int id) {
+    struct node *p = nodeI(id);
+    return ((p && p->len) ? p->len : -1);
 }
 
 int hasId(struct node *p, int id) {
@@ -71,4 +90,12 @@ int hasId(struct node *p, int id) {
             r = m - 1;
     }
     return 0;
+}
+
+struct node *nodeI(int id) {
+    struct node *p = first;
+    while (p && p->id < id)
+        p = p->next;
+
+    return ((p && p->id == id) ? p : NULL);
 }
