@@ -9,6 +9,7 @@ struct node {
 };
 
 void addNode(struct node *p);
+void deleteNode(struct node *target);
 void printNodes();
 void printOneNode(struct node *p);
 void printRanks();
@@ -18,6 +19,7 @@ int outRank(int id);
 int hasId(struct node *p, int id);
 
 struct node *nodeI(int i);
+struct node *getBefore(struct node *q);
 
 struct node *first = 0;
 struct node *last = 0;
@@ -29,6 +31,22 @@ void addNode(struct node *p) {
     } else {
         last->next = p;
         last = p;
+    }
+}
+
+void deleteNode(struct node *target) {
+    if (target) {
+        if (target == first) {
+            first = first->next;
+    
+        } else if (target == last) {
+            last = getBefore(last);
+            last->next = NULL;
+    
+        } else {
+            getBefore(target)->next = target->next;
+        }
+        free(target);
     }
 }
 
@@ -98,4 +116,12 @@ struct node *nodeI(int id) {
         p = p->next;
 
     return ((p && p->id == id) ? p : NULL);
+}
+
+struct node *getBefore(struct node *q) {
+    struct node *p = first;
+    while (p && p->next != q)
+        p = p->next;
+
+    return p;
 }
