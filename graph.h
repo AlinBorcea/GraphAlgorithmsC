@@ -9,7 +9,11 @@ struct node {
 };
 
 void addNode(struct node *p);
+
 void deleteNode(struct node *target);
+void deleteIdInAll(int id);
+void deleteId(struct node **p, int id);
+
 void printNodes();
 void printOneNode(struct node *p);
 void printRanks();
@@ -46,8 +50,41 @@ void deleteNode(struct node *target) {
         } else {
             getBefore(target)->next = target->next;
         }
+        deleteIdInAll(target->id);
         free(target);
     }
+}
+
+void deleteIdInAll(int id) {
+    for (struct node *p = first; p; p = p->next) {
+        if (hasId(p, id))
+            deleteId(&p, id);        
+    }
+}
+
+void deleteId(struct node **p, int id) {
+    int *nums = (int *) malloc(sizeof(int) * ((*p)->len - 1));
+    int i;
+    
+    i = 0;
+    while ((*p)->vertices[i] != id) {
+        nums[i] = (*p)->vertices[i];
+        i++;
+    }
+
+    while (i < (*p)->len - 1) {
+        nums[i] = (*p)->vertices[i + 1];
+        i++;
+    }
+
+    if (i == 0) {
+        free(nums);
+        nums = NULL;
+    }
+
+    free((*p)->vertices);
+    (*p)->vertices = nums;
+    (*p)->len--;
 }
 
 void printNodes() {
