@@ -2,6 +2,8 @@
     "python.pythonPath": "C:\\Users\\7pl4y\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
     "files.associations": {
         "xlocale": "cpp",
-        "xlocnum": "cpp"
+        "xlocnum": "cpp",
+        "xiosbase": "cpp",
+        "xmemory": "cpp"
     }
 }

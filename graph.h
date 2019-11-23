@@ -1,34 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node {
+struct Node {
     int id;
     int *vertices;
     int len;
-    struct node *next;
+    struct Node *next;
 };
 
-void addNode(struct node *p);
+void addNode(struct Node *p);
 
-void deleteNode(struct node *target);
+void deleteNode(struct Node *target);
 void deleteIdInAll(int id);
-void deleteId(struct node **p, int id);
+void deleteId(struct Node **p, int id);
 
 void printNodes();
-void printOneNode(struct node *p);
+void printOneNode(struct Node *p);
 void printRanks();
 
 int inRank(int id);
 int outRank(int id);
-int hasId(struct node *p, int id);
+int hasId(struct Node *p, int id);
 
-struct node *nodeI(int i);
-struct node *getBefore(struct node *q);
+struct Node *nodei(int i);
+struct Node *before(struct Node *q);
 
-struct node *first = 0;
-struct node *last = 0;
+struct Node *first = 0;
+struct Node *last = 0;
 
-void addNode(struct node *p) {
+void addNode(struct Node *p) {
     if (!first) {
         first = p;
         last = first;
@@ -38,17 +38,17 @@ void addNode(struct node *p) {
     }
 }
 
-void deleteNode(struct node *target) {
+void deleteNode(struct Node *target) {
     if (target) {
         if (target == first) {
             first = first->next;
     
         } else if (target == last) {
-            last = getBefore(last);
+            last = before(last);
             last->next = NULL;
     
         } else {
-            getBefore(target)->next = target->next;
+            before(target)->next = target->next;
         }
         deleteIdInAll(target->id);
         free(target);
@@ -56,13 +56,13 @@ void deleteNode(struct node *target) {
 }
 
 void deleteIdInAll(int id) {
-    for (struct node *p = first; p; p = p->next) {
+    for (struct Node *p = first; p; p = p->next) {
         if (hasId(p, id))
             deleteId(&p, id);        
     }
 }
 
-void deleteId(struct node **p, int id) {
+void deleteId(struct Node **p, int id) {
     int *nums = (int *) malloc(sizeof(int) * ((*p)->len - 1));
     int i;
     
@@ -88,11 +88,11 @@ void deleteId(struct node **p, int id) {
 }
 
 void printNodes() {
-    for (struct node *p = first; p; p = p->next) 
+    for (struct Node *p = first; p; p = p->next) 
         printOneNode(p);
 }
 
-void printOneNode(struct node *p) {
+void printOneNode(struct Node *p) {
     printf("%d -> [", p->id);
     if (!p->vertices) {
         printf("none]\n");
@@ -105,13 +105,13 @@ void printOneNode(struct node *p) {
 }
 
 void printInRanks() {
-    for (struct node *p = first; p; p = p->next)
+    for (struct Node *p = first; p; p = p->next)
         printf("in rank of %d is %d\n", p->id, inRank(p->id));
 }
 
 void printOutRanks() {
     int rank;
-    for (struct node *p = first; p; p = p->next) {
+    for (struct Node *p = first; p; p = p->next) {
         rank = outRank(p->id);
         printf("out rank of node %d is ", p->id);
         ((rank) ? printf("%d\n", rank) : printf("none"));
@@ -120,7 +120,7 @@ void printOutRanks() {
 
 int inRank(int id) {
     int c = 0;
-    for (struct node *p = first; p; p = p->next) {
+    for (struct Node *p = first; p; p = p->next) {
         if (p->id != id && p->len > 0 && hasId(p, id))
             c++;
     }
@@ -128,11 +128,11 @@ int inRank(int id) {
 }
 
 int outRank(int id) {
-    struct node *p = nodeI(id);
+    struct Node *p = nodei(id);
     return ((p && p->len) ? p->len : -1);
 }
 
-int hasId(struct node *p, int id) {
+int hasId(struct Node *p, int id) {
     int l = 0, r = p->len - 1, m;
     while (l <= r) {
         m = l + (r - 1) / 2;
@@ -147,16 +147,16 @@ int hasId(struct node *p, int id) {
     return 0;
 }
 
-struct node *nodeI(int id) {
-    struct node *p = first;
+struct Node *nodei(int id) {
+    struct Node *p = first;
     while (p && p->id < id)
         p = p->next;
 
     return ((p && p->id == id) ? p : NULL);
 }
 
-struct node *getBefore(struct node *q) {
-    struct node *p = first;
+struct Node *before(struct Node *q) {
+    struct Node *p = first;
     while (p && p->next != q)
         p = p->next;
 
