@@ -61,3 +61,12 @@ int *neighbors(int n) {
 
     return nums;
 }
+
+int f(int x, int len) {
+    if (x < 50 && x >= 5) 
+        return 2 * x - x % 3;
+    else if (x % 5 == 0)
+        return (x + 2) % 5;
+    else 
+        return ((x + 20 < len) ? x + 20 : x - 10); 
+}

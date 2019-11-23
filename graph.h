@@ -9,6 +9,8 @@ struct Node {
 };
 
 void addNode(struct Node *p);
+void insertBefore(struct Node *newNode, struct Node *p);
+void insertAfter(struct Node *newNode, struct Node *p);
 
 void deleteNode(struct Node *target);
 void deleteIdInAll(int id);
@@ -17,6 +19,9 @@ void deleteId(struct Node **p, int id);
 void printNodes();
 void printOneNode(struct Node *p);
 void printRanks();
+
+void printNodesInFile(char *path);
+void printOneNodeInFile(FILE *file, struct Node *p);
 
 int inRank(int id);
 int outRank(int id);
@@ -36,6 +41,16 @@ void addNode(struct Node *p) {
         last->next = p;
         last = p;
     }
+}
+
+void insertBefore(struct Node *newNode, struct Node *p) {
+    newNode->next = p;
+    before(p)->next = newNode;
+}
+
+void insertAfter(struct Node *newNode, struct Node *p) {
+    newNode->next = p->next;
+    p->next = newNode;
 }
 
 void deleteNode(struct Node *target) {
@@ -85,6 +100,29 @@ void deleteId(struct Node **p, int id) {
     free((*p)->vertices);
     (*p)->vertices = nums;
     (*p)->len--;
+}
+
+// is there a better way to delete contents of a file?
+void printNodesInFile(char *path) {
+    system("rm out_file.txt");
+    system("touch out_file.txt");
+    FILE *file = fopen(path, "w");
+    for (struct Node *p = first; p; p = p->next) 
+        printOneNodeInFile(file, p);
+
+    fclose(file);
+}
+
+void printOneNodeInFile(FILE *file, struct Node *p) {
+    fprintf(file, "%d -> [", p->id);
+    if (!p->vertices) {
+        fprintf(file, "none]\n");
+    } else {
+        fprintf(file, "%d", p->vertices[0]);
+        for (int i = 1; i < p->len; i++)
+            fprintf(file, ", %d", p->vertices[i]);
+        fprintf(file, "]\n");
+    }
 }
 
 void printNodes() {
@@ -156,6 +194,9 @@ struct Node *nodei(int id) {
 }
 
 struct Node *before(struct Node *q) {
+    if (q == first)
+        return first;
+
     struct Node *p = first;
     while (p && p->next != q)
         p = p->next;
