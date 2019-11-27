@@ -3,6 +3,13 @@
 void readNodes();
 void createGraphFromFile(char *path);
 
+/// printing funs
+void printNodes();
+void printOneNode(struct Node *p);
+void printRanks();
+void printNodesInFile(char *path);
+void printOneNodeInFile(FILE *file, struct Node *p);
+
 int *neighbors(int n);
 
 struct Node *newNode();
@@ -73,4 +80,49 @@ struct Node *newNode() {
     p->vertices = neighbors(p->len);
     p->next = 0;
     return p;
+}
+
+// is there a better way to delete contents of a file?
+void printNodesInFile(char *path) {
+    system("rm out_file.txt");
+    system("touch out_file.txt");
+    FILE *file = fopen(path, "w");
+    for (struct Node *p = first; p; p = p->next) 
+        printOneNodeInFile(file, p);
+
+    fclose(file);
+}
+
+void printOneNodeInFile(FILE *file, struct Node *p) {
+    fprintf(file, "%d -> [", p->id);
+    if (!p->vertices) {
+        fprintf(file, "none]\n");
+    } else {
+        fprintf(file, "%d", p->vertices[0]);
+        for (int i = 1; i < p->len; i++)
+            fprintf(file, ", %d", p->vertices[i]);
+        fprintf(file, "]\n");
+    }
+}
+
+void printNodes() {
+    for (struct Node *p = first; p; p = p->next) 
+        printOneNode(p);
+}
+
+void printOneNode(struct Node *p) {
+    printf("%d -> [", p->id);
+    if (!p->vertices) {
+        printf("none]\n");
+    } else {
+        printf("%d", p->vertices[0]);
+        for (int i = 1; i < p->len; i++)
+            printf(", %d", p->vertices[i]);
+        printf("]\n");
+    }
+}
+
+void printInRanks() {
+    for (struct Node *p = first; p; p = p->next)
+        printf("in rank of %d is %d\n", p->id, inRank(p->id));
 }

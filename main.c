@@ -1,5 +1,5 @@
 #include <string.h>
-#include "reader.h"
+#include "io.h"
 
 int main() {
     printf("\e[1;1H\e[2J");
