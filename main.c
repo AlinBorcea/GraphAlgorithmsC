@@ -3,11 +3,16 @@
 
 int main() {
     printf("\e[1;1H\e[2J");
+    system("rm history.txt");
+    system("touch history.txt");
+
+    FILE *history = fopen("history.txt", "w");
     char option[10];
-    int n;
+    int n, m;
     do {
         printf("option$ ");
         scanf("%s", option);
+        fprintf(history, "%s\n", option);
 
         if (!strcmp(option, "read")) 
             readNodes();
@@ -22,24 +27,21 @@ int main() {
             printNodesInFile("out_file.txt");
 
         else if (!strcmp(option, "insbefore")) {
-            struct Node *p = (struct Node *) malloc(sizeof(struct Node));
-            p->id = -1;
-            p->len = 1;
-            p->vertices = (int *) malloc(sizeof(int));
-            p->next = NULL;
-            p->vertices[0] = 0;
-
-            insertBefore(p, first->next);
+            printf("insert before node.. ");
+            scanf("%d", &n);
+            insertBefore(newNode(), nodei(n));
 
         } else if (!strcmp(option, "insafter")) {
-            struct Node *p = (struct Node *) malloc(sizeof(struct Node));
-            p->id = 69;
-            p->len = 1;
-            p->vertices = (int *) malloc(sizeof(int));
-            p->next = NULL;
-            p->vertices[0] = 1;
+            printf("insert before node.. ");
+            scanf("%d", &n);
+            insertAfter(newNode(), nodei(n));
 
-            insertAfter(p, first->next->next);
+        } else if (!strcmp(option, "insedge")) {
+            printf("a = ");
+            scanf("%d", &n);
+            printf("b = ");
+            scanf("%d", &m);
+            insertEdge(n, m);
 
         } else if (!strcmp(option, "del")) {
             printf("id .. "); 

@@ -5,6 +5,8 @@ void createGraphFromFile(char *path);
 
 int *neighbors(int n);
 
+struct Node *newNode();
+
 void readNodes() {
     int n;
     printf("vertex len .. ");
@@ -13,7 +15,7 @@ void readNodes() {
     for (int i = 0; i < n; i++) {
         struct Node *p = (struct Node*) malloc(sizeof(struct Node));
         int m;
-
+ 
         printf("node %d len .. ", i);
         scanf("%d", &m);
         if (m > 0)
@@ -62,11 +64,13 @@ int *neighbors(int n) {
     return nums;
 }
 
-int f(int x, int len) {
-    if (x < 50 && x >= 5) 
-        return 2 * x - x % 3;
-    else if (x % 5 == 0)
-        return (x + 2) % 5;
-    else 
-        return ((x + 20 < len) ? x + 20 : x - 10); 
+struct Node *newNode() {
+    struct Node *p = (struct Node *) malloc(sizeof(struct Node));
+    printf("id: ");
+    scanf("%d", &p->id);
+    printf("len: ");
+    scanf("%d", &p->len);
+    p->vertices = neighbors(p->len);
+    p->next = 0;
+    return p;
 }

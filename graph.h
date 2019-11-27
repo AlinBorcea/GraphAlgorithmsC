@@ -8,25 +8,30 @@ struct Node {
     struct Node *next;
 };
 
+/// creation funs
 void addNode(struct Node *p);
 void insertBefore(struct Node *newNode, struct Node *p);
 void insertAfter(struct Node *newNode, struct Node *p);
+void insertEdge(int a, int b);
 
+/// deletion funs
 void deleteNode(struct Node *target);
 void deleteIdInAll(int id);
 void deleteId(struct Node **p, int id);
 
+/// printing funs
 void printNodes();
 void printOneNode(struct Node *p);
 void printRanks();
-
 void printNodesInFile(char *path);
 void printOneNodeInFile(FILE *file, struct Node *p);
 
+/// int funs
 int inRank(int id);
 int outRank(int id);
 int hasId(struct Node *p, int id);
 
+/// node funs
 struct Node *nodei(int i);
 struct Node *before(struct Node *q);
 
@@ -51,6 +56,31 @@ void insertBefore(struct Node *newNode, struct Node *p) {
 void insertAfter(struct Node *newNode, struct Node *p) {
     newNode->next = p->next;
     p->next = newNode;
+}
+
+void insertEdge(int a, int b) {
+    struct Node *p = nodei(a);
+    int *nums = (int *) malloc(sizeof(int) * (p->len + 1));
+    int i;
+
+    i = 0;
+    while (i < p->len && p->vertices[i] < b) {
+        nums[i] = p->vertices[i];
+        i++;
+    }
+
+    /// 1 4 5 6
+    /// 1 4 6
+    nums[i] = b;
+
+    while (i < p->len) {
+        nums[i + 1] = p->vertices[i];
+        i++;
+    }
+
+    free(p->vertices);
+    p->vertices = nums;
+    p->len++;
 }
 
 void deleteNode(struct Node *target) {
