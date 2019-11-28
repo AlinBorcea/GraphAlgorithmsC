@@ -8,6 +8,9 @@ struct Node {
     struct Node *next;
 };
 
+struct Node *first = 0;
+struct Node *last = 0;
+
 /// creation funs
 void addNode(struct Node *p);
 void insertBefore(struct Node *newNode, struct Node *p);
@@ -27,9 +30,6 @@ int hasId(struct Node *p, int id);
 /// node funs
 struct Node *nodei(int i);
 struct Node *before(struct Node *q);
-
-struct Node *first = 0;
-struct Node *last = 0;
 
 void addNode(struct Node *p) {
     if (!first) {

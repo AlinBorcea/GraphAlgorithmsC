@@ -2,22 +2,15 @@
 #include "array.h"
 
 int main() {
-    int n = 10;
-    int *arr = (int *) malloc(sizeof(int) * n);
-    int i;
+    insertOrderedVal(1);
+    insertOrderedVal(3);
+    insertOrderedVal(5);
+    insertOrderedVal(4);
 
-    for (i = 0; i < n; i++)
-        arr[i] = i;
+    deleteVal(3);
+    //deleteVal(8);
 
-    insertOrdered(&arr, &n, 30);
-    for (i = 0; i < n; i++)
-        printf("%d ", arr[i]);
-
-    printf("\n\n");
-    deleteVal(&arr, &n, 3);
-    for (i = 0; i < n; i++)
-        printf("%d ", arr[i]);
-
+    printArray();
     printf("\n");
     return 0;
 }
