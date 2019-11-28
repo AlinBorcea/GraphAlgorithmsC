@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "array.h"
 
 struct Node {
     int id;
-    int *vertices;
-    int len;
+    struct Array *edges;
     struct Node *next;
 };
 
@@ -52,28 +52,7 @@ void insertAfter(struct Node *newNode, struct Node *p) {
 }
 
 void insertEdge(int a, int b) {
-    struct Node *p = nodei(a);
-    int *nums = (int *) malloc(sizeof(int) * (p->len + 1));
-    int i;
-
-    i = 0;
-    while (i < p->len && p->vertices[i] < b) {
-        nums[i] = p->vertices[i];
-        i++;
-    }
-
-    /// 1 4 5 6
-    /// 1 4 6
-    nums[i] = b;
-
-    while (i < p->len) {
-        nums[i + 1] = p->vertices[i];
-        i++;
-    }
-
-    free(p->vertices);
-    p->vertices = nums;
-    p->len++;
+    insertOrderedVal(nodei(a)->edges, b);
 }
 
 void deleteNode(struct Node *target) {
@@ -94,35 +73,8 @@ void deleteNode(struct Node *target) {
 }
 
 void deleteIdInAll(int id) {
-    for (struct Node *p = first; p; p = p->next) {
-        if (hasId(p, id))
-            deleteId(&p, id);        
-    }
-}
-
-void deleteId(struct Node **p, int id) {
-    int *nums = (int *) malloc(sizeof(int) * ((*p)->len - 1));
-    int i;
-    
-    i = 0;
-    while ((*p)->vertices[i] != id) {
-        nums[i] = (*p)->vertices[i];
-        i++;
-    }
-
-    while (i < (*p)->len - 1) {
-        nums[i] = (*p)->vertices[i + 1];
-        i++;
-    }
-
-    if (i == 0) {
-        free(nums);
-        nums = NULL;
-    }
-
-    free((*p)->vertices);
-    (*p)->vertices = nums;
-    (*p)->len--;
+    for (struct Node *p = first; p; p = p->next) 
+        deleteVal(p->edges, id);
 }
 
 void printOutRanks() {
@@ -137,30 +89,25 @@ void printOutRanks() {
 int inRank(int id) {
     int c = 0;
     for (struct Node *p = first; p; p = p->next) {
-        if (p->id != id && p->len > 0 && hasId(p, id))
-            c++;
+        if (p->id != id) {
+            for (struct Array *q = p->edges; q; q = q->next) {
+                if (q->val == id) {
+                    c++;
+                    break;
+                }
+                if (q->val > id)
+                    break;
+            }
+        }
     }
     return c;
 }
 
 int outRank(int id) {
-    struct Node *p = nodei(id);
-    return ((p && p->len) ? p->len : -1);
-}
-
-int hasId(struct Node *p, int id) {
-    int l = 0, r = p->len - 1, m;
-    while (l <= r) {
-        m = l + (r - 1) / 2;
-        if (p->vertices[m] == id)
-            return 1;
-
-        if (p->vertices[m] < id)
-            l = m + 1;
-        else 
-            r = m - 1;
-    }
-    return 0;
+    int c = 0;
+    for (struct Array *p = nodei(id)->edges; p; p = p->next)
+        c++;
+    return c;
 }
 
 struct Node *nodei(int id) {
@@ -168,7 +115,7 @@ struct Node *nodei(int id) {
     while (p && p->id < id)
         p = p->next;
 
-    return ((p && p->id == id) ? p : NULL);
+    return ((p && p->id == id) ? p : first);
 }
 
 struct Node *before(struct Node *q) {
