@@ -52,7 +52,7 @@ void insertAfter(struct Node *newNode, struct Node *p) {
 }
 
 void insertEdge(int a, int b) {
-    insertOrderedVal(nodei(a)->edges, b);
+    insertOrderedVal(&nodei(a)->edges, b);
 }
 
 void deleteNode(struct Node *target) {

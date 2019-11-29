@@ -14,13 +14,7 @@ int main() {
         scanf("%s", option);
         fprintf(history, "%s\n", option);
 
-        if (!strcmp(option, "read")) 
-            readNodes();
-
-        else if (!strcmp(option, "print"))
-            printNodes();
-
-        else if (!strcmp(option, "file"))
+        if (!strcmp(option, "file"))
             createGraphFromFile("nums.txt");
 
         else if (!strcmp(option, "outfile"))
