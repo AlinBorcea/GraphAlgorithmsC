@@ -48,5 +48,6 @@ int main() {
     } while (strcmp(option, "exit")); 
 
     printf("\e[1;1H\e[2J");
+    fclose(history);
     return 0;
 }

@@ -19,7 +19,7 @@ void insertOrderedVal(struct Array **first, int val) {
     struct Array *q = 0;
     if (!*first) {
         *first = newElement;
-    
+
     } else {
         while (p && p->val < val) {
             q = p;
@@ -31,12 +31,15 @@ void insertOrderedVal(struct Array **first, int val) {
             newElement->pre = q;
             q->next = p;
         
+        } else if (p == *first) {
+            newElement->next = *first;
+            *first = newElement;
+
         } else {
             newElement->next = p;
             newElement->pre = q;
             q->next = newElement;
         }
-
     }
 }
 
