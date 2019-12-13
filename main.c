@@ -15,7 +15,7 @@ int main() {
         fprintf(history, "%s\n", option);
 
         if (!strcmp(option, "file"))
-            createGraphFromFile("nums.txt");
+            createGraphFromFile("example.txt");
 
         else if (!strcmp(option, "outfile"))
             printNodesInFile("out_file.txt");
@@ -44,6 +44,15 @@ int main() {
         
         } else if (!strcmp(option, "clear"))
             printf("\e[1;1H\e[2J");
+
+        else if (!strcmp(option, "dfs")) {
+            dfsUtil(2);
+            printf("\n");
+        }
+
+        else if (!strcmp(option, "bfs"))
+            bfs(nodei(1));
+
 
     } while (strcmp(option, "exit")); 
 

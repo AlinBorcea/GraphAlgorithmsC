@@ -8,10 +8,23 @@ struct Array {
 };
 
 void insertOrderedVal(struct Array **p, int val);
-void deleteVal(struct Array *first, int val);
+void insertVal(struct Array **first, int val);
+void deleteVal(struct Array **first, int val);
 void printArray(struct Array *first);
 
 struct Array *newVal(int val);
+struct Array *lastVal(struct Array *first);
+
+int arrayLen(struct Array *head);
+
+int arrayLen(struct Array *head) {
+    int c = 0;
+    while (head) {
+        c++;
+        head = head->next;
+    }
+    return c;
+}
 
 void insertOrderedVal(struct Array **first, int val) {
     struct Array *newElement = newVal(val);
@@ -43,10 +56,18 @@ void insertOrderedVal(struct Array **first, int val) {
     }
 }
 
-void deleteVal(struct Array *first, int val) {
-    struct Array *p = first;
-    if (first->val == val) {
-        first = first->next;
+void insertVal(struct Array **first, int val) {
+    if (!(*first)) {
+        *first = newVal(val);
+        return;
+    }
+    lastVal(*first)->next = newVal(val);
+}
+
+void deleteVal(struct Array **first, int val) {
+    struct Array *p = *first;
+    if ((*first)->val == val) {
+        *first = (*first)->next;
         free(p);
         return;
     }
@@ -77,4 +98,10 @@ struct Array *newVal(int val) {
     p->val = val;
     p->pre = p->next = 0;
     return p;
+}
+
+struct Array *lastVal(struct Array *first) {
+    while (first && first->next)
+        first = first->next;
+    return first;
 }
