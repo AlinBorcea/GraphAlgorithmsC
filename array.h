@@ -14,6 +14,7 @@ void printArray(struct Array *first);
 
 struct Array *newVal(int val);
 struct Array *lastVal(struct Array *first);
+struct Array *vali(struct Array *p, int val);
 
 int arrayLen(struct Array *head);
 
@@ -97,6 +98,12 @@ struct Array *newVal(int val) {
     struct Array *p = (struct Array *) malloc(sizeof(struct Array));
     p->val = val;
     p->pre = p->next = 0;
+    return p;
+}
+
+struct Array *vali(struct Array *p, int val) {
+    while (p && p->val != val)
+        p = p->next;
     return p;
 }
 

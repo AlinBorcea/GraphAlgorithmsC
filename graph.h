@@ -5,51 +5,77 @@
 struct Node {
     int id;
     struct Array *edges;
+    struct Array *costs;
     struct Node *next;
 };
 
-struct Node *first = 0;
-struct Node *last = 0;
-
 /// creation funs
-void addNode(struct Node *p);
-void insertBefore(struct Node *newNode, struct Node *p);
+struct Node *graphFromFile(char *path);
+void addNode(struct Node **first, struct Node **last, struct Node *p);
+void insertBefore(struct Node *first, struct Node *newNode, struct Node *p);
 void insertAfter(struct Node *newNode, struct Node *p);
-void insertEdge(int a, int b);
+void insertEdge(struct Node *first, int a, int b);
 
 /// deletion funs
-void deleteNode(struct Node *target);
-void deleteIdInAll(int id);
+void deleteNode(struct Node *first, struct Node *last, struct Node *target);
+void deleteIdInAll(struct Node *first, int id);
 void deleteId(struct Node **p, int id);
 
 /// int funs
-int inRank(int id);
-int outRank(int id);
+int inRank(struct Node *first,  int id);
+int outRank(struct Node *first, int id);
 int hasId(struct Node *p, int id);
 int nodeLen(struct Node *first);
 
 /// node funs
-struct Node *nodei(int i);
-struct Node *before(struct Node *q);
+struct Node *nodei(struct Node *first, int i);
+struct Node *before(struct Node *first, struct Node *q);
+struct Node *last(struct Node *first);
 
 /// algorithms
-void dfs(struct Node *p, int *visited);
-void dfsUtil(int start);
+void dfs(struct Node *first, struct Node *p, int *visited);
+void dfsUtil(struct Node *first, int start);
+void dijkstra(struct Node *first, int start);
 
+/// "constructor"
+struct Node *graphFromFile(char *path) {
+    FILE *file = fopen(path, "r");
+    struct Node *first = 0;
+    struct Node *last = 0;
+    struct Node *p;
+    int i, len, x;
+    
+    while (!feof(file)) {
+        p = (struct Node *) malloc(sizeof(struct Node));
+        p->id = -1;
+        p->edges = p->costs = NULL;
+        p->next = NULL;
 
-void addNode(struct Node *p) {
-    if (!first) {
-        first = p;
-        last = first;
+        fscanf(file, "%d", &p->id);
+        fscanf(file, "%d", &len);
+        for (i = 0; i < len; i++) {
+            fscanf(file, "%d", &x);
+            insertOrderedVal(&p->edges, x);
+        }
+        addNode(&first, &last, p);
+    }
+    fclose(file);
+    return first;
+}
+
+void addNode(struct Node **first, struct Node **last, struct Node *p) {
+    if (!*first) {
+        *first = p;
+        *last = first;
     } else {
-        last->next = p;
-        last = p;
+        (*last)->next = p;
+        *last = p;
     }
 }
 
-void insertBefore(struct Node *newNode, struct Node *p) {
+void insertBefore(struct Node *first, struct Node *newNode, struct Node *p) {
     newNode->next = p;
-    before(p)->next = newNode;
+    before(first, p)->next = newNode;
 }
 
 void insertAfter(struct Node *newNode, struct Node *p) {
@@ -57,42 +83,42 @@ void insertAfter(struct Node *newNode, struct Node *p) {
     p->next = newNode;
 }
 
-void insertEdge(int a, int b) {
-    insertOrderedVal(&nodei(a)->edges, b);
+void insertEdge(struct Node *first, int a, int b) {
+    insertOrderedVal(&nodei(first, a)->edges, b);
 }
 
-void deleteNode(struct Node *target) {
+void deleteNode(struct Node *first, struct Node *last, struct Node *target) {
     if (target) {
         if (target == first) {
             first = first->next;
     
         } else if (target == last) {
-            last = before(last);
+            last = before(first, last);
             last->next = NULL;
     
         } else {
-            before(target)->next = target->next;
+            before(first, target)->next = target->next;
         }
-        deleteIdInAll(target->id);
+        deleteIdInAll(first, target->id);
         free(target);
     }
 }
 
-void deleteIdInAll(int id) {
+void deleteIdInAll(struct Node *first, int id) {
     for (struct Node *p = first; p; p = p->next) 
         deleteVal(&p->edges, id);
 }
 
-void printOutRanks() {
+void printOutRanks(struct Node *first) {
     int rank;
     for (struct Node *p = first; p; p = p->next) {
-        rank = outRank(p->id);
+        rank = outRank(first, p->id);
         printf("out rank of node %d is ", p->id);
         ((rank) ? printf("%d\n", rank) : printf("none"));
     }
 }
 
-int inRank(int id) {
+int inRank(struct Node *first, int id) {
     int c = 0;
     for (struct Node *p = first; p; p = p->next) {
         if (p->id != id) {
@@ -109,9 +135,9 @@ int inRank(int id) {
     return c;
 }
 
-int outRank(int id) {
+int outRank(struct Node *first, int id) {
     int c = 0;
-    for (struct Array *p = nodei(id)->edges; p; p = p->next)
+    for (struct Array *p = nodei(first, id)->edges; p; p = p->next)
         c++;
     return c;
 }
@@ -123,7 +149,7 @@ int nodeLen(struct Node *first) {
     return c;
 }
 
-struct Node *nodei(int id) {
+struct Node *nodei(struct Node *first, int id) {
     struct Node *p = first;
     while (p && p->id < id)
         p = p->next;
@@ -131,7 +157,7 @@ struct Node *nodei(int id) {
     return ((p && p->id == id) ? p : first);
 }
 
-struct Node *before(struct Node *q) {
+struct Node *before(struct Node *first, struct Node *q) {
     if (q == first)
         return first;
 
@@ -142,43 +168,55 @@ struct Node *before(struct Node *q) {
     return p;
 }
 
-void dfsUtil(int start) {
+struct Node *last(struct Node *first) {
+    while (first && first->next)
+        first = first->next;
+    return first;
+}
+
+void dfsUtil(struct Node *first, int start) {
     int len = nodeLen(first);
     int *visited = (int *) malloc(sizeof(int) * len);
     for (int i = 0; i < len; i++)
         visited[i] = 0;
 
-    dfs(nodei(start), visited);
+    dfs(first, nodei(first, start), visited);
 }
 
-void dfs(struct Node *p, int *visited) {
+void dfs(struct Node *first, struct Node *p, int *visited) {
     printf("%d ", p->id);
     visited[p->id] = 1;
     for (struct Array *arr = p->edges; arr; arr = arr->next) {
         if (!visited[arr->val])
-            dfs(nodei(arr->val), visited);
+            dfs(first, nodei(first, arr->val), visited);
     }
 }
 
-void bfs(struct Node *p) {
+void bfs(struct Node *first, struct Node *p) {
     int len = nodeLen(first);
     int *visited = (int *) malloc(sizeof(int) * len);
     for (int i = 0; i < len; i++)
         visited[i] = 0;
 
     struct Array *queue = newVal(p->id);
-    int lastId;
-    while (arrayLen(queue)) {
+    struct Array *q;
+    int qlen = 1;
+    while (qlen) {
         printf("%d ", queue->val);
-        lastId = queue->val;
-        visited[lastId] = 1;
+        q = nodei(first, queue->val)->edges;
+        visited[queue->val] = 1;
         deleteVal(&queue, queue->val);
-        for (struct Array *q = nodei(lastId)->edges; q; q = q->next) {
+        qlen--;
+        while (q) {
             if (!visited[q->val]) {
                 visited[q->val] = 1;
                 insertVal(&queue, q->val);
+                qlen++;
             }
+            q = q->next;
         }
     }
     printArray(queue);
 }
+
+void dijkstra(struct Node *first, int start) {}

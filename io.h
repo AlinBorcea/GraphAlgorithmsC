@@ -1,7 +1,5 @@
 #include "graph.h"
 
-void createGraphFromFile(char *path);
-
 void printRanks();
 void printNodesInFile(char *path);
 void printOneNodeInFile(FILE *file, struct Node *p);
@@ -9,29 +7,7 @@ void printOneNodeInFile(FILE *file, struct Node *p);
 struct Node *newNode();
 struct Array *newEdges();
 
-void createGraphFromFile(char *path) {
-    FILE *file = fopen(path, "r");
-    struct Node *p;
-    int i, len, x;
-    
-    while (!feof(file)) {
-        p = (struct Node *) malloc(sizeof(struct Node));
-        p->id = -1;
-        p->edges = NULL;
-        p->next = NULL;
-
-        fscanf(file, "%d", &p->id);
-        fscanf(file, "%d", &len);
-        for (i = 0; i < len; i++) {
-            fscanf(file, "%d", &x);
-            insertOrderedVal(&p->edges, x);
-        }
-        addNode(p);
-    }
-    fclose(file);
-}
-
-void printNodesInFile(char *path) {
+void printNodesInFile(struct Node *first, char *path) {
     system("rm out_file.txt");
     system("touch out_file.txt");
     FILE *file = fopen(path, "w");

@@ -3,16 +3,14 @@
 
 int main() {
     printf("\e[1;1H\e[2J");
-    system("rm history.txt");
-    system("touch history.txt");
-
-    FILE *history = fopen("history.txt", "w");
+    struct Node *first = 0;
+    struct Node *last = 0;
     char option[10];
     int n, m;
+    
     do {
         printf("option$ ");
         scanf("%s", option);
-        fprintf(history, "%s\n", option);
 
         if (!strcmp(option, "file"))
             createGraphFromFile("example.txt");
@@ -57,6 +55,5 @@ int main() {
     } while (strcmp(option, "exit")); 
 
     printf("\e[1;1H\e[2J");
-    fclose(history);
     return 0;
 }
