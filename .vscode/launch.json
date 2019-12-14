@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "a.out",
+            "program": "/home/alin/c/graph/a.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "/home/alin/c/graph",

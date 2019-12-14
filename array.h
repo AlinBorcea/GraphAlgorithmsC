@@ -11,12 +11,14 @@ void insertOrderedVal(struct Array **p, int val);
 void insertVal(struct Array **first, int val);
 void deleteVal(struct Array **first, int val);
 void printArray(struct Array *first);
+void printArrayInFile(FILE *file, struct Array *head);
 
 struct Array *newVal(int val);
 struct Array *lastVal(struct Array *first);
 struct Array *vali(struct Array *p, int val);
 
 int arrayLen(struct Array *head);
+int contains(struct Array *head, int val);
 
 int arrayLen(struct Array *head) {
     int c = 0;
@@ -27,32 +29,40 @@ int arrayLen(struct Array *head) {
     return c;
 }
 
+int contains(struct Array *head, int val) {
+    while (head && head->next && head->next->val < val)
+        head = head->next;
+    return ((head && head->next && (head->val == val || head->next->val == val)) ? 1 : 0);
+}
+
 void insertOrderedVal(struct Array **first, int val) {
-    struct Array *newElement = newVal(val);
-    struct Array *p = *first;
-    struct Array *q = 0;
-    if (!*first) {
-        *first = newElement;
-
-    } else {
-        while (p && p->val < val) {
-            q = p;
-            p = p->next;
-        }
-
-        if (!p) {
-            p = newElement;
-            newElement->pre = q;
-            q->next = p;
-        
-        } else if (p == *first) {
-            newElement->next = *first;
+    if (!contains(*first, val)) {
+        struct Array *newElement = newVal(val);
+        struct Array *p = *first;
+        struct Array *q = 0;
+        if (!*first) {
             *first = newElement;
 
         } else {
-            newElement->next = p;
-            newElement->pre = q;
-            q->next = newElement;
+            while (p && p->val < val) {
+                q = p;
+                p = p->next;
+            }
+
+            if (!p) {
+                p = newElement;
+                newElement->pre = q;
+                q->next = p;
+        
+            } else if (p == *first) {
+                newElement->next = *first;
+                *first = newElement;
+
+            } else {
+                newElement->next = p;
+                newElement->pre = q;
+                q->next = newElement;
+            }
         }
     }
 }
@@ -92,6 +102,14 @@ void printArray(struct Array *first) {
     for (struct Array *p = first; p; p = p->next)
         printf("%d ", p->val);
     printf("\n");
+}
+
+void printArrayInFile(FILE *file, struct Array *head) {
+    while (head) {
+        fprintf(file, "%d ", head->val);
+        head = head->next;
+    }
+    fprintf(file, "\n");
 }
 
 struct Array *newVal(int val) {

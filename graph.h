@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "array.h"
 
 struct Node {
@@ -9,28 +7,34 @@ struct Node {
     struct Node *next;
 };
 
-/// creation funs
-struct Node *graphFromFile(char *path);
+/// creations
+struct Node *graphFromFile(char *path, int random);
+struct Node *newNode(int id);
 void addNode(struct Node **first, struct Node **last, struct Node *p);
+
+/// insertions
 void insertBefore(struct Node *first, struct Node *newNode, struct Node *p);
 void insertAfter(struct Node *newNode, struct Node *p);
 void insertEdge(struct Node *first, int a, int b);
 
-/// deletion funs
+/// deletions
 void deleteNode(struct Node *first, struct Node *last, struct Node *target);
 void deleteIdInAll(struct Node *first, int id);
 void deleteId(struct Node **p, int id);
 
-/// int funs
+/// ints
 int inRank(struct Node *first,  int id);
 int outRank(struct Node *first, int id);
 int hasId(struct Node *p, int id);
 int nodeLen(struct Node *first);
 
-/// node funs
+/// nodes
 struct Node *nodei(struct Node *first, int i);
 struct Node *before(struct Node *first, struct Node *q);
 struct Node *last(struct Node *first);
+
+/// printers
+void printGraph(struct Node *first);
 
 /// algorithms
 void dfs(struct Node *first, struct Node *p, int *visited);
@@ -38,35 +42,55 @@ void dfsUtil(struct Node *first, int start);
 void dijkstra(struct Node *first, int start);
 
 /// "constructor"
-struct Node *graphFromFile(char *path) {
+struct Node *graphFromFile(char *path, int random) {
     FILE *file = fopen(path, "r");
     struct Node *first = 0;
     struct Node *last = 0;
-    struct Node *p;
-    int i, len, x;
-    
-    while (!feof(file)) {
-        p = (struct Node *) malloc(sizeof(struct Node));
-        p->id = -1;
-        p->edges = p->costs = NULL;
-        p->next = NULL;
+    struct Node *p = 0;
+    int len, a, b, c;
 
-        fscanf(file, "%d", &p->id);
-        fscanf(file, "%d", &len);
-        for (i = 0; i < len; i++) {
-            fscanf(file, "%d", &x);
-            insertOrderedVal(&p->edges, x);
+    fscanf(file, "%d", &len);
+    for (int i = 0; i < len; i++)
+        addNode(&first, &last, newNode(i));
+
+    if (random) {
+        int it = len;
+        while (it) {
+            a = rand() % len;
+            c = rand() % 100;
+            p = nodei(first, a);
+            while (c) {
+                b = rand() % len;
+                insertOrderedVal(&p->edges, b);
+                c--;
+            }
+            it--;
+            printf("%d\n", it);
         }
-        addNode(&first, &last, p);
+
+    } else {
+        while (!feof(file)) {
+            fscanf(file, "%d", &a);
+            fscanf(file, "%d", &b);
+            insertOrderedVal(&nodei(first, a)->edges, b);
+        }
     }
     fclose(file);
     return first;
 }
 
+struct Node *newNode(int id) {
+    struct Node *p = (struct Node *) malloc(sizeof(struct Node));
+    p->id = id;
+    p->edges = p->costs = 0;
+    p->next = 0;
+    return p;
+}
+
 void addNode(struct Node **first, struct Node **last, struct Node *p) {
     if (!*first) {
         *first = p;
-        *last = first;
+        *last = *first;
     } else {
         (*last)->next = p;
         *last = p;
@@ -172,6 +196,15 @@ struct Node *last(struct Node *first) {
     while (first && first->next)
         first = first->next;
     return first;
+}
+
+void printGraph(struct Node *first) {
+    FILE *file = fopen("out.txt", "w");
+    while (first) {
+        fprintf(file, "%d -> ", first->id);
+        ((first->edges) ? printArrayInFile(file, first->edges) : fprintf(file, "none\n"));
+        first = first->next;
+    }
 }
 
 void dfsUtil(struct Node *first, int start) {
